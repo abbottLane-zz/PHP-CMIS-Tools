@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script src="script.js"></script>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+
+    <script>document.domain="byu.edu"</script>
+    <script>
+        //Helper function called in "deleteSelected()" and "downloadSelected()" to pull the arguments from the current html url
+        function parseURL(url) {
+            var parser = document.createElement('a'),
+                    searchObject = {},
+                    queries, split, i;
+            // Let the browser do the work
+            parser.href = url;
+            // Convert query string to object
+            queries = parser.search.replace(/^\?/, '').split('&');
+            for( i = 0; i < queries.length; i++ ) {
+                split = queries[i].split('=');
+                searchObject[split[0]] = split[1];
+            }
+            return {
+                protocol: parser.protocol,
+                host: parser.host,
+                hostname: parser.hostname,
+                port: parser.port,
+                pathname: parser.pathname,
+                search: parser.search,
+                searchObject: searchObject,
+                hash: parser.hash
+            };
+        }
+
+        //Method called when the user clicks "Delete selected"
+        function deleteSelected()
+        {
+            //extract the selected index
+            var sel = document.forms['alf-form'].elements['alf-files'];
+            //alert(sel.selectedIndex);
+
+            //grab current alfWindow url, parse form Id
+            var url = window.location;
+            var id = parseURL(url).searchObject.toString();
+            var search = parseURL(url).search.toString();
+
+            //Isolate the form ID
+            var formId="";
+            for(var i = 0; i < search.length; i ++)
+            {
+                if(search[i] == "="){
+                    i++;
+                    while(i < search.length) {
+                        formId += search[i];
+                        i++;
+                    }
+                }
+            }
+            id = formId;
+
+            //pass the index and formId to some php that will delete the cmis object at that index, reload options
+            $("#alf-files").load("./cmis_deleter.php?id=" + formId + "&item="+sel.selectedIndex);
+        }
+
+        // Method called when the user clicks "download Selected"
+        function downloadSelected(){
+            //extract the selected index
+            var sel = document.forms['alf-form'].elements['alf-files'];
+            //alert(sel.selectedIndex);
+            if(sel.selectedIndex != -1) {
+                //grab current alfWindow url, parse form Id
+                var url = window.location;
+                var id = parseURL(url).searchObject.toString();
+                var search = parseURL(url).search.toString();
+
+                //Isolate the form ID
+                var formId = "";
+                for (var i = 0; i < search.length; i++) {
+                    if (search[i] == "=") {
+                        i++;
+                        while (i < search.length) {
+                            formId += search[i];
+                            i++;
+                        }
+                    }
+                }
+                id = formId;
+                window.location = 'cmis_download.php?id=' + formId + "&item=" + sel.selectedIndex;
+            }
+        }
+
+        //function called by default when the download.html window is opened: populates the option box
+        $(function() {
+            //grab current alfWindow url, parse form Id
+            var url = window.location;
+            var id = parseURL(url).searchObject.toString();
+            var search = parseURL(url).search.toString();
+
+            //Isolate the form ID
+            var formId="";
+            for(var i = 0; i < search.length; i ++)
+            {
+                if(search[i] == "="){
+                    i++;
+                    while(i < search.length) {
+                        formId += search[i];
+                        i++;
+                    }
+                }
+            }
+            id = formId;
+
+             //load options into option window
+            $("#alf-files").load("./cmis_getter.php?id=" + formId);
+        });</script>
+
+    <title>Testing Center Doc Download</title>
+</head>
+<body>
+<div class="col-sm-4">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h3 class="panel-title"><b>Download Test Files</b></h3>
+        </div>
+        <div class="panel-body" id="x">
+            <form action="#" id="alf-form" enctype="multipart/form-data" method="get">
+                <div>
+                    <p>Please select files to download:</p>
+                    <p>
+                        <select id="alf-files" name="ddl" size=5 style="width: 300px"> multiple> <!--style="width: 300px"-->
+                            <option value='' selected>-- Select a file --  </option>
+                        </select>
+                    </p>
+                    <p>
+                        <button type="button" name="download" id="download" class="btn btn-xs btn-success" onclick="downloadSelected()">Download Selected</button>
+                        <button type ="button" name="delete" class="btn btn-xs btn-danger" onclick="deleteSelected()">Delete Selected</button>
+                        <button type="button" name="close"  class="btn btn-xs btn-warning" onclick="window.open('', '_self', ''); window.close()">Close Dialog</button>
+                    </p>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

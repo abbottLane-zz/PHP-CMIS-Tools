@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script src="script.js"></script>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+
+    <script>document.domain="byu.edu"</script>
+
+    <!-- Show upload buttons based on need, as indicated by the scheme url variable:
+        Deciphering the Scoring scheme selected:
+             0 = Scoring0 = entire test scored by instructor                                        (TEST file only)
+             1 = Scoring10 = entire test on testing center answer sheet                             (TEST and KEY files only)
+             2 = Scoring 20 = Testing center scored portion and written instructor scored portion   (TEST, KEY, and ADDitional file files
+
+             Visibility set to hidden by default, then script at bottom reveals divs based on the above scoring scheme
+    -->
+    <style>
+        #TEST {visibility:hidden }
+        #KEY {visibility:hidden }
+        #ADD {visibility:hidden }
+    </style>
+</head>
+<body>
+
+<!-- Bootstrap testing -->
+<div class="col-sm-4">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h3 class="panel-title"><b>Upload Test Files</b></h3>
+        </div>
+        <div class="panel-body" id="x">
+            <form action="#" enctype="multipart/form-data" method="post">
+                <div>
+                    <p>Please select files to upload: </p>
+                    <p id="TEST">
+                        <label for="file_upload">Test File:</label>
+                        <input type="file" name="file_upload" id="file_upload" multiple>
+                        <!--<div id ="TestFileSuccess" style="color: #008000">Success!</div>-->
+                    </p>
+                    <p id="TestResult"></p>
+                    <p id="KEY">
+                        <label for="file_upload">Key File:</label>
+                        <input type="file" name="file_upload" id="file_upload2" multiple>
+                    </p>
+                    <p id="KeyResult"></p>
+                    <p id="ADD">
+                        <label for="file_upload">Optional Portion:</label>
+                        <input type="file" name="file_upload" id="file_upload3" multiple>
+                    </p>
+                    <p id="OptionalResult"></p>
+                    <!--<li><input class="button green" type="submit" name="submit" value="Submit Content"></li>-->
+                    <p>
+                        <button type="submit" name="submit" class="btn btn-xs btn-success">Upload</button>
+                        <button type="button" name="close"  class="btn btn-xs btn-warning" onclick="window.open('', '_self', ''); window.close()">Close Dialog</button>
+                    </p>
+                    <p id="result"></p>
+                </div>
+            </form>
+            <!-- <progress></progress> -->
+            <!--<?php if (isset($_GET['success'])) { ?>
+            <span class="notice">Your file has been uploaded.</span>
+            <?php } ?> -->
+        </div>
+    </div>
+</div>
+<script>
+    //start with all upload options invisible, then toggle visibility based on the scoring number (passed in as variable "s")
+    //parse URL arguments
+    function getParam ( sname )
+    {
+        var params = location.search.substr(location.search.indexOf("?")+1);
+        var sval = "";
+        params = params.split("&");
+        // split param and value into individual pieces
+        for (var i=0; i<params.length; i++)
+        {
+            temp = params[i].split("=");
+            if ( [temp[0]] == sname ) { sval = temp[1]; }
+        }
+        return sval;
+    }
+    var param = getParam("s");
+
+    if (param == 0) {
+        document.getElementById("TEST").style.visibility = "visible";
+    } else if (param == 1) {
+        document.getElementById("KEY").style.visibility = "visible";
+        document.getElementById("TEST").style.visibility = "visible";
+    } else {
+        document.getElementById("TEST").style.visibility = "visible";
+        document.getElementById("KEY").style.visibility = "visible";
+        document.getElementById("ADD").style.visibility = "visible";
+    }
+</script>
+<!-- END Bootstrap testing -->
+</body>
+</html>
